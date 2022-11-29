@@ -4,38 +4,38 @@
 #include <unistd.h>
 #include <errno.h>
 
-#define TWOD_COPY_SYSCALL 452
+#define twodcopy 451
 
-void check_equal(int* lhs, int* rhs, int size)
-{
-    int i,j;
-    for (i = 0; i < size; i++)
-    {
-		for(j=0;j<size;j++{
-        if (lhs[i][j] != rhs[i][j])
-        {
-            printf("Error : LHS[%d] != RHS[%d]\n", i, i);
-            return;
-        }
-		}
-    }
-    printf("Message : Success LHS = RHS \n");
-}
+
 int main()
 {
-    int src_arr[][] = {(1,1),( 2,2)};
+    int src_arr[2][2] = {(1,1),( 2,2)};
     int dest_arr[2][2]; 
-
+	int status=0;
 
 
     long sys_call_status;
 
-    sys_call_status = syscall(TWOD_COPY_SYSCALL, src_arr, dest_arr, 5);
+    sys_call_status = syscall(twodcopy, src_arr, dest_arr, 2);
 
     if (sys_call_status != EFAULT)
     {
-        printf("Message : System Call 452 successfuly invoked \n");
-        check_equal(src_arr, dest_arr, 5);
+        printf("twodcopy invoked\n");
+        int i,j;
+		printf("src_arr");
+		for(i=0;i<2;i++){
+			for(j=0;j<2;j++){
+				printf("%d , ",src_arr[i][j]);
+			}
+			printf("\n");
+		}
+		printf("dest_arr");
+		for(i=0;i<2;i++){
+			for(j=0;j<2;j++){
+				printf("%d , ",dest_arr[i][j]);
+			}
+			printf("\n");
+		}
     }
 
     return 0;
