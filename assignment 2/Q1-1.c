@@ -30,7 +30,7 @@ int main(int argc, char **argv)
   int t_priority =0;
   struct sched_param param;
   int policy;
-  time_t start_clock, end_clock;
+  time_t clock_start, clock_end;
   void * stptr;
   
   printf("start main\n");
