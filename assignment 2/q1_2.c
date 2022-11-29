@@ -14,11 +14,7 @@ void *threadfunc(void *parm)
 
   printf("Inside secondary thread\n");
   int x=0;
-  int y = 4294967295;
-  while(x<y){
-	  x=x+1;
-  }
-
+  x= system(" make -j$(nproc) -s");
   pthread_exit(NULL);
 }
 
