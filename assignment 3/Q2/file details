@@ -1,0 +1,3 @@
+Files sockserver.c and sockclient.c are for the implementation using Unix Domain Sockets
+File Q2_2 is the implementation using FIFO pipe
+File Q3_3 is the implementation using Shared Memory
