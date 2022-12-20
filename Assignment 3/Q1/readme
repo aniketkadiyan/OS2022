@@ -2,7 +2,8 @@
     --> make / make all : compiles both programs then runs them one after the other
     --> make Aone : compiles and runs part A with semaphores and strict ordering
     --> make Atwo : compiles and runs part A without semaphores
-    --> make Bone : compiles and runs part B. i.e. the one with two sauce bowls and no strict ordering.
+    --> make Bone : compiles and runs part B. i.e. the one with two sauce bowls with semaphores
+    --> make Btwo : compiles and runs part B. i.e. the one with two sauce bowls without semaphores
     --> make clean : cleans the directory by removing compiled programs.
 
 ----------------------------------------------------------------------------------------------------------
