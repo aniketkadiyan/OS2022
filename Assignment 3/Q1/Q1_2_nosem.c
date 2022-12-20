@@ -35,7 +35,7 @@ void dine(int id)
             // if bowls are available
             if (numbowls > 0 && numbowls <= 2)
             {
-                Pstat[id].bowl = 1;
+                Pstat[id].bowl = numbowls;
                 printf("\tphilospher %d has bowl %d\n", id + 1, numbowls);
                 numbowls -= 1;
             }
@@ -79,7 +79,7 @@ void dine(int id)
                 Pstat[id].bowl = 0;
                 numbowls++;
                 printf("\tPhilosopher %d released fork %d and fork %d\n", id + 1, lf + 1, rf + 1);
-                printf("\tphilospher %d has released bowl %d\n", id + 1, numbowls);
+                printf("\tphilospher %d has released bowl %d\n", id + 1, Pstat[id].bowl);
                 numeats--;
             }
 
