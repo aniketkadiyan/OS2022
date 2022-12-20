@@ -1,12 +1,7 @@
 all:
-	echo making part a
 	gcc Q1_1.c -o Q1_1
-	./Q1_1
-	echo part a complete
-	echo making part b
 	gcc Q1_2.c -o Q1_2
-	./Q1_2
-	echo part 2 complete
+	gcc Q1_1_nosem.c -o Q1_1_nosem
 
 Aone:
 	echo making part a with semaphores
@@ -27,5 +22,5 @@ Bone:
 	echo part 2 complete
 
 clean: 
-	rm Q1_1 Q1_2
+	rm Q1_1 Q1_2 Q1_1_nosem
 	echo directory cleaned
