@@ -1,0 +1,94 @@
+>> Makefile commands:
+    --> make / make all : compiles all programs
+    --> make IPCshm : compiles ShmP1.c and ShmP2.c. then runs them in parallel
+    --> make IPCpipe : compiles pipeclient.c and pipeserver.c. then runs them in parallel
+    --> make IPCsocket : compiles sockserver.c and sockclient.c then runs them in parallel
+    --> make clean : cleans the directory by removing compiled programs
+
+--------------------------------------------------------------------------------------------------
+
+>> IPC throgh sockets :
+    sockclient acts as P1 to send data
+    sockserver acts as P2 to receive data
+    data is sent in string packets of format : "id : string"
+    sockclient sends 5 packets at a time.
+    sock server listenes for 5 pockets at a time and then sends back the highest id received as a single string
+    sock client then sends the next 5 packets according to the id received
+    synchronization is inherent in the socket architecture and no semaphores are required
+    sockserver uses:
+        socket(AF_INET, SOCK_STREAM, 0) : to define a socket connection
+        setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) : to modify socket options
+        bind(server_fd, (struct sockaddr *)&address, sizeof(address)) : to bind the socket
+        listen(server_fd, 3) : to listen to incoming client connections
+            for testing porpouses we are listening to 2 request at max
+        accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) : to accept incoming client connections
+        read(new_socket, buffer, 11) : to read incoming values into a buffer
+        send(new_socket, str, strlen(str), 0) : to send string str to client
+        we are forcefuly binding and using port 8080
+    sockclient uses : 
+        socket(AF_INET, SOCK_STREAM, 0) : to define a socket connection
+        connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) : to connect to a given socket . 8080 in our case
+         send(sock, strarr[index+i], strlen(strarr[index+i]), 0) : to send string through socket
+         read(sock, buffer, 2) : to read acknowledgement received to the buffer
+
+
+--------------------------------------------------------------------------------------------------
+
+
+
+>> IPC through pipes :
+use a single pipe called 'my_fifo'
+    pipeserver acts as P1 to send data
+    pipeclient acts as P2 to receive data
+    data is stored in the "String : id" format
+    5 strings at a time are written into a single variable buffer which is then sent to P2
+    P2 gets the single buffer object and gets the id from the last string in buffer
+    buffer and pipe are of sufficient size as to prevent fragmentation
+    P2 sends back acknowledgement to P1 via the same pipe
+    process continues until all strings are sent
+    to ensure synchronization P1 goes to sleep for 3 seconds after sending the data
+    pipeserver (P1) uses:
+        mkfifo(FIFO_NAME, 0666) : to make the fifo pipe if not exist before
+        open(FIFO_NAME, O_WRONLY) : to open the pipe in write-only mode
+        write(fifo, message, strlen(message)) : to write our message into the pipe
+        close(fifo) : to close the pipe
+        open(FIFO_NAME, O_RDONLY) : to open the pipe in read-only mode
+        read(fifo, message1, 512) : to read from the pipe
+    pipeclient (P2) uses :
+        open(FIFO_NAME, O_RDONLY) : to open the pipe in read-only mode
+        read(fifo, inmessage, 512) : to read from the pipe
+        close(fifo) : to close the pipe
+        write(fifo, message1, 512) : to write the acknowledgement id to the pipe
+
+
+--------------------------------------------------------------------------------------------------
+
+>> IPC through shared memory :
+    ShmP1.c acts as P1 to send data
+    ShmP2.c acts as P2 to receive data
+    a custom struct my_data_struct is used to store the id - string pairs.
+    an array of 5 structs is written into the shared memory by P1
+    P2 reads the array and acknowledges back the highest received ID through the shared memory
+    the acknowledgement is sent back with a struct having string "got it" and ID as the highest id received
+    to synchronize P1 and P2 two named semaphores are used :
+        "/mysem" : using variable sem_write_done
+        "/mysem1" : using variable sem_read_done
+    ShmP1 (P1) uses :
+        shmget(SHM_KEY, 1024, 0666 | IPC_CREAT) : to create a shared memory space if not already exists
+        shmat(shmid, NULL, 0) : to attatch the process to the shared memory space
+        sem_open(SNAME, O_CREAT, 0777, 0) : to open an existing names semaphore. semaphore is created if not pre-existing
+        memcpy(shared_memory, tstrings, 80) : to write data into the shared memory
+        sem_post() : to request and wait for semaphore
+        sem_wait() : to release semaphore
+        (struct my_data_struct *)shared_memory : is assigned to a variable to help read from the shares memory
+        sem_close(sem_read_done) : to close the semaphore 
+    ShmP2 (P2) uses :
+        shmget(SHM_KEY, 1024, 0666 | IPC_CREAT) : to create a shared memory space if not already exists
+        shmat(shmid, NULL, 0) : to attatch the process to the shared memory space
+        sem_open(SNAME, O_CREAT, 0777, 0) : to open an existing names semaphore. semaphore is created if not pre-existing
+        (struct my_data_struct *)shared_memory : is assigned to a variable to help read from the shares memory
+        memcpy(shared_memory, idack, sizeof(idack)); : to write acknowledgement into the shared memory
+        sem_post() : to request and wait for semaphore
+        sem_wait() : to release semaphore
+        sem_close(sem_read_done) : to close the semaphore
+

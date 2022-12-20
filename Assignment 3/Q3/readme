@@ -1,0 +1,44 @@
+>> Makefile commands :
+    --> make / make all : compile the module code
+    --> make clean : remove all compilation files
+
+----------------------------------------------------------------------------------
+
+>> terminal commands after make :
+    --> sudo insmod proctask.ko [process_name=<name>]
+        inserts the module into the kernel and runs it
+        insert name of the desired process in place of <name>
+        process_name is optional
+        if not defined as argument "bash" is used as default process_name
+    --> sudo dmesg
+        shows the result of the module running
+    --> sudo rmmod proctask.ko
+        removes the module from kernel
+
+
+------------------------------------------------------------------------------------
+
+>>  the module is named proctask and is stored in proctask.c
+    the module uses:
+        module_param(process_name, charp, 0) : to take a string input into variable process_name
+        MODULE_PARM_DESC(process_name, "Name of the process to find the PID of") : used to describe the argument in documentation and module info
+        int my_strcmp(char *str1, char *str2); : used to compare inserted process name to existing process name
+        __init pid_module_init : the init module that runs when module is loaded
+            struct task_struct *task_list : the pointer to first element of OS defined list of the task_structs of all running processes
+            pr_info() : used to print output read by dmesg
+            for_each_process(task_list) : OS defined loop to loop through the task list
+                task_list->comm : the commandpath of the task
+                task_list->pid : process id 
+                task_list->cred->uid : user id
+                pid_vnr(task_pgrp(task_list) : group id
+            multiple processes of the same name may be found
+                is such a case all instances are listed individualy
+            the number of processes found is also printed
+        __exit hello_cleanup : the function that runs on removing the module
+            it just prints cleaning up module
+        module_init(pid_module_init) : used to mark the init function that runs on insmod
+        module_exit(hello_cleanup) : used to mark the exit function that runs on rmmod
+        MODULE_LICENSE("GPL") : license
+        MODULE_AUTHOR("aniket") : author
+        
+        

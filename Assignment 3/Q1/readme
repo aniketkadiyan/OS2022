@@ -1,0 +1,54 @@
+>> Make file commands:
+    --> make / make all : compiles both programs then runs them one after the other
+    --> make one : compiles and runs part A. i.e. the one using semaphores and strict ordering
+    --> make two : compiles and runs part B. i.e. the one with two sauce bowls and no strict ordering.
+    --> make clean : cleans the directory by removing compiled programs.
+
+----------------------------------------------------------------------------------------------------------
+
+>> part A uses semaphore and strict ordering.
+    5 parallel threads are made using pthread_create() to simulate philosphers
+    they are later joined back to parent process using pthread_join()
+    semaphores are declared as global variables to simulate forks.
+        they are initiated using sem_init().
+        they have an initial value of 1
+        they are shared among threads
+        an array of 5 semaphores called forks is used
+        they are finally destroyed using sem_destroy()
+    each thread runs the dine function.
+        uses strict ordering i.e. each philospher picks the lower ranked fork first.
+        sem_wait()is used to wait on and eventualy pick a fork when free.
+        sem_post()is used to release a fork
+        each philospher eats at most 3 times so that the program eventualy ends
+        this can be modified to make the philosphers eat infinite times.
+        each philospher thinks for a random time of upto 5 seconds
+        after getting forks each philospher eats for 3 seconds
+        thinking and eating are simulated using the sleep() command
+
+----------------------------------------------------------------------------------------------------------
+
+>> part B uses semaphores only but has an addition of two sauce bowls.
+    5 parallel threads are made using pthread_create() to simulate philosphers
+    they are later joined back to parent process using pthread_join()
+    semaphores are declared as global variables to simulate forks and bowls.
+        they are initiated using sem_init().
+        an array of 5 semaphores called forks is used to denote forks
+        a single semaphore called bowls is used to denote bwols
+        all forks have an initial value on 1.
+        bowls has an initial value of 2.
+        they are finally destroyed using sem_destroy()
+    each thread runs the dine function
+        to avoid deadlock a philospher only picks forks after getting a bowl.
+        bowls are obtained using sem_wait()
+        this ensures that deadlock does not happen as at most two people eat at the same time and no one else has any resources.
+        after getting a bowl we use busy wait to simulate picking of forks in no paticular order.
+        sem_trywait() is used to pick forks 
+        the philospher continues trying to get forks untill he gets both forks.
+        each philospher eats at most 3 times so that the program eventualy ends
+        this can be modified to make the philosphers eat infinite times.
+        each philospher thinks for a random time of upto 5 seconds
+        after getting forks each philospher eats for 3 seconds
+        thinking and eating are simulated using the sleep() command
+        after eating sem_post() is used to release forks and then the bowl.
+
+
