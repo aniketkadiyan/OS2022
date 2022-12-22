@@ -27,7 +27,7 @@ void dine(int id)
     printf("Philosopher %d is thinking\n", id + 1);
     sleep((rand() % 5) + 1);
     int numeats = 3;
-    while (numeats > 0)
+    while (numeats < 4)
     {
         // if philospher has no bowl
         if (Pstat[id].bowl == 0)
