@@ -24,7 +24,7 @@ void dine(int id)
     printf("Philosopher %d is thinking\n", id + 1);
     sleep((rand() % 5) + 1);
     int numeats = 3;
-    while (numeats > 0)
+    while (numeats < 4)
     {
         // specify left and right forks for id
         int lf = id;
