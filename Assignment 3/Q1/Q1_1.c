@@ -70,7 +70,7 @@ void printforks()
 void dine(int n)
 {
   int x = 3;
-  while (x > -1)
+  while (x < 4)//infinite loop
   {
     printf("\nPhilosopher % d is thinking ", n);
     sleep((rand() % 5) + 1);
