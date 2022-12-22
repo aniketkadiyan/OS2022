@@ -83,7 +83,7 @@ void dine(int n)
 {
   int x = 3;
   int stat = THINKING;
-  while (x > -1)
+  while (x < 4)
   {
     printf("\nPhilosopher % d is thinking ", n);
     sleep((rand() % 5) + 1);
